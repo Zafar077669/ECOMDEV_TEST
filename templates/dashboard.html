@@ -1,0 +1,353 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#050b18">
+    <meta name="description" content="EduPay — o‘quv markazi o‘quvchilari, to‘lovlari va oylik qarzdorligini boshqarish tizimi.">
+
+    <title>EduPay | O‘quv markazi boshqaruvi</title>
+
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <script src="{% static 'js/dashboard.js' %}" defer></script>
+</head>
+<body>
+    <div class="app-shell">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar" aria-label="Asosiy menyu">
+            <a class="brand" href="/" aria-label="EduPay bosh sahifasi">
+                <span class="brand-icon" aria-hidden="true">E</span>
+                <span>
+                    EduPay
+                    <small>EDUCATION FINANCE</small>
+                </span>
+            </a>
+
+            <nav class="navigation" aria-label="Sahifa bo‘limlari">
+                <a class="nav-link active" href="#overview">Umumiy ko‘rinish</a>
+                <a class="nav-link" href="#students">O‘quvchilar</a>
+                <a class="nav-link" href="#debtors">Qarzdorlik</a>
+                <a class="nav-link" href="#payment">To‘lov kiritish</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="status-dot" aria-hidden="true"></span>
+                EduPay boshqaruv tizimi
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-content">
+
+            <!-- HEADER -->
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">EDUPAY / DASHBOARD</p>
+                    <h1>Moliyaviy boshqaruv</h1>
+                    <p class="muted">
+                        O‘quvchilar, to‘lovlar va qarzdorlik — bitta boshqaruv panelida.
+                    </p>
+                </div>
+
+                <label class="month-picker" for="report-month">
+                    Hisobot davri
+                    <input
+                        type="month"
+                        id="report-month"
+                        name="month"
+                        required
+                    >
+                </label>
+            </header>
+
+            <!-- SUMMARY -->
+            <section
+                class="stats-grid"
+                id="overview"
+                aria-label="Tanlangan oy ko‘rsatkichlari"
+                aria-live="polite"
+            >
+                <article class="stat-card">
+                    <span class="stat-label">Jami o‘quvchilar</span>
+                    <strong id="total-students">—</strong>
+                    <span class="stat-note">Ro‘yxatdagi o‘quvchilar</span>
+                </article>
+
+                <article class="stat-card">
+                    <span class="stat-label">Qarzdor o‘quvchilar</span>
+                    <strong id="total-debtors">—</strong>
+                    <span class="stat-note">Tanlangan oy bo‘yicha</span>
+                </article>
+
+                <article class="stat-card">
+                    <span class="stat-label">Jami qarzdorlik</span>
+                    <strong id="total-debt">—</strong>
+                    <span class="stat-note">To‘lanmagan summa</span>
+                </article>
+            </section>
+
+            <!-- DEBTORS -->
+            <section class="panel" id="debtors">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">PAYMENT MONITORING</p>
+                        <h2>Qarzdorlar ro‘yxati</h2>
+                        <p class="muted">
+                            Oylik to‘lovini to‘liq amalga oshirmagan o‘quvchilar.
+                        </p>
+                    </div>
+
+                    <button
+                        class="button button-secondary"
+                        id="refresh-button"
+                        type="button"
+                    >
+                        Yangilash
+                    </button>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <caption class="visually-hidden">
+                            Tanlangan oy uchun o‘quvchilarning qarzdorlik jadvali
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">O‘quvchi</th>
+                                <th scope="col">Guruh</th>
+                                <th scope="col">Oylik to‘lov</th>
+                                <th scope="col">To‘langan</th>
+                                <th scope="col">Qarz</th>
+                                <th scope="col">Amal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="debtors-table">
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    Qarzdorlik ma’lumotlari yuklanmoqda...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- STUDENT MANAGEMENT -->
+            <section class="panel" id="students">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">STUDENT MANAGEMENT</p>
+                        <h2>O‘quvchilar</h2>
+                        <p class="muted">
+                            O‘quvchilar ro‘yxati, telefon raqami, guruhi va oylik to‘lovi.
+                        </p>
+                    </div>
+
+                    <button
+                        class="button button-primary"
+                        id="show-student-form"
+                        type="button"
+                        aria-controls="student-form-panel"
+                        aria-expanded="false"
+                    >
+                        + O‘quvchi qo‘shish
+                    </button>
+                </div>
+
+                <!-- CRUD FORM: JavaScript bilan keyingi bosqichda ulanadi -->
+                <div class="student-form-panel" id="student-form-panel" hidden>
+                    <h3 id="student-form-title">Yangi o‘quvchi</h3>
+
+                    <form id="student-form" class="payment-form">
+                        <input type="hidden" id="student-id" name="id">
+
+                        <label for="student-name">
+                            To‘liq ism
+                            <input
+                                type="text"
+                                id="student-name"
+                                name="name"
+                                maxlength="150"
+                                autocomplete="name"
+                                placeholder="O‘quvchining ismi"
+                                required
+                            >
+                        </label>
+
+                        <label for="student-phone">
+                            Telefon raqami
+                            <input
+                                type="tel"
+                                id="student-phone"
+                                name="phone"
+                                maxlength="20"
+                                autocomplete="tel"
+                                placeholder="+998..."
+                                required
+                            >
+                        </label>
+
+                        <label for="student-group">
+                            Guruh
+                            <input
+                                type="text"
+                                id="student-group"
+                                name="group_name"
+                                maxlength="100"
+                                placeholder="Masalan, Python-01"
+                                required
+                            >
+                        </label>
+
+                        <label for="student-monthly-fee">
+                            Oylik to‘lov (so‘m)
+                            <input
+                                type="number"
+                                id="student-monthly-fee"
+                                name="monthly_fee"
+                                min="0"
+                                step="0.01"
+                                placeholder="500000"
+                                required
+                            >
+                        </label>
+
+                        <div class="form-actions">
+                            <button
+                                class="button button-primary"
+                                id="save-student"
+                                type="submit"
+                            >
+                                O‘quvchini saqlash
+                            </button>
+
+                            <button
+                                class="button button-secondary"
+                                id="cancel-student-form"
+                                type="button"
+                            >
+                                Bekor qilish
+                            </button>
+                        </div>
+
+                        <p
+                            id="student-message"
+                            class="form-message"
+                            role="status"
+                            aria-live="polite"
+                        ></p>
+                    </form>
+                </div>
+
+                <div class="student-toolbar">
+                    <label class="search-label" for="student-search">
+                        O‘quvchini qidirish
+                    </label>
+
+                    <input
+                        type="search"
+                        id="student-search"
+                        class="search-input"
+                        placeholder="Ism, telefon yoki guruh..."
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <caption class="visually-hidden">
+                            Barcha o‘quvchilar ro‘yxati
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Ism</th>
+                                <th scope="col">Telefon</th>
+                                <th scope="col">Guruh</th>
+                                <th scope="col">Oylik to‘lov</th>
+                                <th scope="col">Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table">
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    O‘quvchilar yuklanmoqda...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- PAYMENT ENTRY -->
+            <section class="panel payment-panel" id="payment">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">PAYMENT ENTRY</p>
+                        <h2>To‘lovni qayd etish</h2>
+                        <p class="muted">
+                            To‘lov ma’lumotlarini kiriting va serverga yuboring.
+                        </p>
+                    </div>
+                </div>
+
+                <form id="payment-form" class="payment-form">
+                    <label for="payment-student">
+                        O‘quvchi
+                        <select id="payment-student" name="student" required>
+                            <option value="">O‘quvchini tanlang</option>
+                        </select>
+                    </label>
+
+                    <label for="payment-amount">
+                        To‘lov summasi (so‘m)
+                        <input
+                            type="number"
+                            id="payment-amount"
+                            name="amount"
+                            min="0.01"
+                            step="0.01"
+                            inputmode="decimal"
+                            placeholder="500000"
+                            required
+                        >
+                    </label>
+
+                    <label for="payment-date">
+                        To‘lov sanasi
+                        <input
+                            type="date"
+                            id="payment-date"
+                            name="payment_date"
+                            required
+                        >
+                    </label>
+
+                    <div class="form-actions">
+                        <button
+                            class="button button-primary"
+                            type="submit"
+                            id="submit-payment"
+                        >
+                            To‘lovni saqlash
+                        </button>
+                    </div>
+
+                    <p
+                        id="payment-message"
+                        class="form-message"
+                        role="status"
+                        aria-live="polite"
+                    ></p>
+                </form>
+            </section>
+
+            <footer class="page-footer">
+                <p>EduPay · O‘quv markazi hisob-kitob tizimi</p>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>
